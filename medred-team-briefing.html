@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedRed — Team Briefing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAFBFC;
+    --card:#FFFFFF;
+    --ink:#0B2230;
+    --muted:#5B6B75;
+    --line:#E3E9ED;
+    --teal:#0E7C6B;
+    --teal-soft:#E4F3F0;
+    --risk:#C4322B;
+    --risk-soft:#FBEAE9;
+    --amber:#B26A00;
+    --amber-soft:#FCF1DE;
+    --blue:#1B5E9E;
+    --blue-soft:#E7F0F9;
+    --violet:#6B4FA0;
+    --violet-soft:#F0EBF8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'IBM Plex Sans',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;font-size:16px}
+  .mono{font-family:'IBM Plex Mono',monospace}
+
+  /* ===== Masthead styled like a lab report header ===== */
+  header{background:var(--ink);color:#fff;padding:40px 24px 0}
+  .head-inner{max-width:1060px;margin:0 auto}
+  .report-strip{display:flex;flex-wrap:wrap;gap:16px 32px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8FB6C4;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:14px}
+  .report-strip b{color:#fff;font-weight:600}
+  h1{font-size:clamp(34px,5.5vw,56px);font-weight:700;letter-spacing:-0.02em;margin:22px 0 6px}
+  h1 .plus{color:#3FBFA8}
+  .tagline{color:#B9CCD5;font-size:17px;max-width:640px;margin-bottom:26px}
+  nav{display:flex;gap:4px;overflow-x:auto;padding-bottom:0}
+  nav button{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.04em;background:transparent;border:none;color:#9FB8C2;padding:12px 16px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+  nav button:hover{color:#fff}
+  nav button.active{color:#fff;border-bottom-color:#3FBFA8;font-weight:600}
+  nav button:focus-visible{outline:2px solid #3FBFA8;outline-offset:-2px}
+
+  main{max-width:1060px;margin:0 auto;padding:40px 24px 90px}
+  section.page{display:none;animation:fade .35s ease}
+  section.page.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){section.page{animation:none}}
+
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:8px}
+  h2{font-size:30px;font-weight:700;letter-spacing:-.01em;margin-bottom:8px}
+  .lede{color:var(--muted);max-width:700px;margin-bottom:30px;font-size:16.5px}
+
+  /* ===== Lab-report style status chips ===== */
+  .chip{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.06em;padding:3px 9px;border-radius:4px;display:inline-block;text-transform:uppercase;white-space:nowrap}
+  .chip.core{background:var(--teal-soft);color:var(--teal)}
+  .chip.new{background:var(--violet-soft);color:var(--violet)}
+  .chip.high{background:var(--risk-soft);color:var(--risk)}
+  .chip.med{background:var(--amber-soft);color:var(--amber)}
+  .chip.low{background:var(--blue-soft);color:var(--blue)}
+  .chip.free{background:var(--teal-soft);color:var(--teal)}
+  .chip.phase{background:var(--blue-soft);color:var(--blue)}
+  .chip.rev{background:var(--amber-soft);color:var(--amber)}
+
+  /* ===== Cards ===== */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:22px;position:relative}
+  .card .num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:.08em}
+  .card h3{font-size:18px;font-weight:600;margin:6px 0 8px;letter-spacing:-.01em}
+  .card p{font-size:14.5px;color:var(--muted)}
+  .card .chiprow{margin-top:14px;display:flex;gap:6px;flex-wrap:wrap}
+  .card.accent-teal{border-top:3px solid var(--teal)}
+  .card.accent-violet{border-top:3px solid var(--violet)}
+
+  /* ===== Risk rows: styled like abnormal lab values ===== */
+  .riskrow{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--risk);border-radius:10px;padding:22px 24px;margin-bottom:16px}
+  .riskrow.amber{border-left-color:var(--amber)}
+  .riskrow .rr-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  .riskrow h3{font-size:18px;font-weight:600}
+  .riskrow .problem{font-size:14.5px;color:var(--muted);margin-bottom:14px}
+  .fix{background:var(--teal-soft);border-radius:8px;padding:14px 16px;font-size:14.5px}
+  .fix .fixlabel{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--teal);text-transform:uppercase;display:block;margin-bottom:6px}
+  .fix ul{margin:4px 0 0 18px}
+  .fix li{margin-bottom:5px}
+
+  /* ===== Key-value spec tables (ABHA page) ===== */
+  .spec{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:26px}
+  .spec th,.spec td{text-align:left;padding:13px 18px;border-bottom:1px solid var(--line);font-size:14.5px;vertical-align:top}
+  .spec tr:last-child td{border-bottom:none}
+  .spec th{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;width:220px;background:#F4F7F9}
+
+  /* ===== Timeline (marketing) ===== */
+  .phase-block{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:24px;margin-bottom:16px;display:grid;grid-template-columns:120px 1fr;gap:22px}
+  .phase-block .pnum{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--blue);font-size:13px;letter-spacing:.08em}
+  .phase-block h3{font-size:18px;margin-bottom:6px}
+  .phase-block p{font-size:14.5px;color:var(--muted)}
+  .phase-block ul{margin:8px 0 0 18px;font-size:14.5px;color:var(--muted)}
+  .phase-block li{margin-bottom:4px}
+  @media(max-width:560px){.phase-block{grid-template-columns:1fr;gap:8px}}
+
+  /* ===== Roadmap ===== */
+  .lane{margin-bottom:26px}
+  .lane-title{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .lane-title h3{font-size:19px}
+  .lane .grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+  .mini{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-size:14px}
+  .mini b{display:block;font-size:14.5px;margin-bottom:3px}
+  .mini span{color:var(--muted);font-size:13.5px}
+
+  .callout{background:var(--blue-soft);border:1px solid #C9DDF0;border-radius:10px;padding:18px 20px;font-size:14.5px;margin:24px 0}
+  .callout b{color:var(--blue)}
+  .callout.warn{background:var(--amber-soft);border-color:#F0DCBB}
+  .callout.warn b{color:var(--amber)}
+
+  .overview-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:26px 0}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .stat .k{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .stat .v{font-size:20px;font-weight:700;margin-top:4px;letter-spacing:-.01em}
+  .stat .v small{font-size:13px;font-weight:500;color:var(--muted)}
+
+  footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:.06em}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <div class="report-strip">
+      <span>DOC · <b>TEAM BRIEFING 01</b></span>
+      <span>DATE · <b>04 JUL 2026</b></span>
+      <span>PREPARED BY · <b>PRASHANT (STRATEGY + TECH)</b></span>
+      <span>STATUS · <b>PLANNING</b></span>
+    </div>
+    <h1>MedRed<span class="plus">+</span></h1>
+    <p class="tagline">One app where any Indian family — even grandma — can understand reports, follow prescriptions, store health records for life, and find the right doctor.</p>
+    <nav id="tabs">
+      <button class="active" data-page="overview">Overview</button>
+      <button data-page="features">Features (Meet)</button>
+      <button data-page="suggested">Suggested Features</button>
+      <button data-page="risks">Risks &amp; Solutions</button>
+      <button data-page="abha">ABHA Research</button>
+      <button data-page="marketing">Marketing</button>
+      <button data-page="roadmap">Roadmap</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= OVERVIEW ================= -->
+<section class="page active" id="overview">
+  <div class="eyebrow">The Vision</div>
+  <h2>A health revolution for non-technical India</h2>
+  <p class="lede">Most Indian families can't read their own medical reports, forget prescription timings, carry physical files of records, and don't know which doctor to trust. MedRed fixes all four — in Hindi and English, designed for the least technical person in the family.</p>
+
+  <div class="overview-stats">
+    <div class="stat"><div class="k">Team</div><div class="v">4 people <small>tech · allopathy · homeopathy · ayurveda</small></div></div>
+    <div class="stat"><div class="k">Build order</div><div class="v">Web first <small>then Flutter mobile</small></div></div>
+    <div class="stat"><div class="k">AI engine</div><div class="v">Gemini API <small>free tier to start (see Risks)</small></div></div>
+    <div class="stat"><div class="k">Pricing</div><div class="v">₹99 / month <small>covers 4 blood-related family members</small></div></div>
+  </div>
+
+  <div class="callout"><b>The one-line pitch:</b> "DigiLocker + report translator + family doctor finder — for every Indian family, in their own language."</div>
+
+  <div class="grid">
+    <div class="card accent-teal"><div class="num">WHO IT'S FOR</div><h3>The whole family, not just one user</h3><p>Grandparents who can't read English reports, parents managing kids' vaccinations, anyone with a chronic condition. One subscription, four private logins, one shared family health story.</p></div>
+    <div class="card accent-teal"><div class="num">WHY NOW</div><h3>The government built the rails for us</h3><p>India's ABDM/ABHA digital health mission already gives every citizen a health ID and free APIs. We build the friendly, family-first layer on top — instead of fighting the government, we ride it. Details in the ABHA Research tab.</p></div>
+    <div class="card accent-teal"><div class="num">HOW WE WIN</div><h3>Simplicity is the moat</h3><p>Practo and 1mg exist — but they're built for urban English-speaking users. Our edge: Hindi-first, voice-friendly, grandma-simple UI, and a team that spans all three pathies.</p></div>
+  </div>
+</section>
+
+<!-- ================= FEATURES FROM MEET ================= -->
+<section class="page" id="features">
+  <div class="eyebrow">Discussed in the team Meet</div>
+  <h2>Core features · 10</h2>
+  <p class="lede">Everything we agreed on in the meeting, cleaned up and prioritized. Chips show suggested priority for v1.</p>
+
+  <div class="grid">
+    <div class="card accent-teal"><div class="num">F-01</div><h3>Report Reader</h3><p>Upload any medical report (blood, urine, thyroid…). AI explains every value in simple Hindi/English with visuals — what's high, what's low, what precaution to take. Built for grandma.</p><div class="chiprow"><span class="chip core">MUST — V1</span></div></div>
+    <div class="card accent-teal"><div class="num">F-02</div><h3>Prescription Scanner</h3><p>Upload a prescription → app extracts medicines, doses and timing ("empty stomach, morning"). User confirms/corrects before saving to handle messy handwriting. Then daily reminders.</p><div class="chiprow"><span class="chip core">MUST — V1</span></div></div>
+    <div class="card accent-teal"><div class="num">F-03</div><h3>Health Locker (family DigiLocker)</h3><p>Lifetime vault of all reports from birth onward — replaces the physical file families carry to every hospital. Linked to family tree.</p><div class="chiprow"><span class="chip core">MUST — V1</span><span class="chip free">ABHA-LINKED</span></div></div>
+    <div class="card accent-teal"><div class="num">F-04</div><h3>Family Plan · ₹99/mo</h3><p>One subscription covers 4 blood-related members (father, mother, children). Each has their own login and password — privacy between members by default.</p><div class="chiprow"><span class="chip rev">REVENUE</span></div></div>
+    <div class="card accent-teal"><div class="num">F-05</div><h3>Follow-up Reminders</h3><p>"Your last HbA1c was 3 months ago — time to test again." Automatic, based on uploaded reports.</p><div class="chiprow"><span class="chip core">MUST — V1</span></div></div>
+    <div class="card accent-teal"><div class="num">F-06</div><h3>Specialist Router <span class="mono" style="font-size:12px;color:var(--muted)">(was: "Pathy Recommender")</span></h3><p>Tells the user which <em>type</em> of specialist suits their problem — allopathy, homeopathy or ayurveda — with a mandatory "consult a doctor first" flow. Reframed for legal safety → see Risks tab.</p><div class="chiprow"><span class="chip med">REFRAMED</span></div></div>
+    <div class="card accent-teal"><div class="num">F-07</div><h3>Doctor Directory + Consultations</h3><p>Superprof-style listing of verified doctors with real reviews. Book online (₹500–2000 / 10–20 min) or offline. Platform sits in the middle — doctor and patient never exchange direct contacts.</p><div class="chiprow"><span class="chip low">PHASE 2</span><span class="chip rev">REVENUE</span></div></div>
+    <div class="card accent-teal"><div class="num">F-08</div><h3>Home Remedies</h3><p>For common problems (ear pain, diarrhea, toothache): upload a photo or pick the problem, get a safe home cure. Hard-coded red-flag list sends emergencies straight to a doctor.</p><div class="chiprow"><span class="chip low">PHASE 2</span></div></div>
+    <div class="card accent-teal"><div class="num">F-09</div><h3>Medical News Feed</h3><p>Scrollable "medical Twitter": myth-busters, new government schemes, health news with hook lines. Keeps users opening the app daily.</p><div class="chiprow"><span class="chip low">PHASE 2</span></div></div>
+    <div class="card accent-teal"><div class="num">F-10</div><h3>Web first → Flutter mobile</h3><p>Ship the web app (Next.js + Supabase) to validate fast, then wrap the same backend in a Flutter cross-platform app for installs.</p><div class="chiprow"><span class="chip phase">ARCHITECTURE</span></div></div>
+  </div>
+</section>
+
+<!-- ================= SUGGESTED FEATURES ================= -->
+<section class="page" id="suggested">
+  <div class="eyebrow">Added after research · Claude's suggestions</div>
+  <h2>Suggested features · 8</h2>
+  <p class="lede">Research-backed additions that fit India specifically. S-01 and S-03 are the strongest — they turn features we already planned into daily-use habits.</p>
+
+  <div class="grid">
+    <div class="card accent-violet"><div class="num">S-01</div><h3>Trend Graphs Across Reports</h3><p>The locker's killer feature: HbA1c over 3 years, TSH over time, creatinine trend. One chart tells a diabetic more than ten reports — and doctors love it in consultations.</p><div class="chiprow"><span class="chip new">HIGH IMPACT</span><span class="chip core">ADD TO V1</span></div></div>
+    <div class="card accent-violet"><div class="num">S-02</div><h3>Generic Medicine Price Saver</h3><p>Scan a prescription → "this ₹340 brand has a ₹40 generic at your nearest Jan Aushadhi Kendra." Saves families 50–90% on medicines. Instantly viral with our audience.</p><div class="chiprow"><span class="chip new">HIGH IMPACT</span></div></div>
+    <div class="card accent-violet"><div class="num">S-03</div><h3>Voice-First Hindi Interface</h3><p>Grandma won't type. She speaks — "mera thyroid report kya bolta hai?" — and hears the answer read aloud. The single biggest accessibility unlock for our target user.</p><div class="chiprow"><span class="chip new">HIGH IMPACT</span><span class="chip core">ADD TO V1</span></div></div>
+    <div class="card accent-violet"><div class="num">S-04</div><h3>Emergency Health Card (QR)</h3><p>Shareable QR: blood group, allergies, chronic conditions, current medicines, emergency contact. In an accident, any stranger can scan it. Tiny build on top of the locker.</p><div class="chiprow"><span class="chip new">QUICK WIN</span></div></div>
+    <div class="card accent-violet"><div class="num">S-05</div><h3>Child Vaccination Tracker</h3><p>National immunization schedule with reminders from birth. Perfect retention hook for young parents — and maps straight onto the family plan.</p><div class="chiprow"><span class="chip new">RETENTION</span></div></div>
+    <div class="card accent-violet"><div class="num">S-06</div><h3>Lab Test Booking Loop</h3><p>Reminder fires → book home sample collection with our partner pathology lab → report auto-lands in the locker. Lab commissions can out-earn ₹99 subscriptions.</p><div class="chiprow"><span class="chip rev">REVENUE</span><span class="chip phase">USES PHASE-3 PARTNERS</span></div></div>
+    <div class="card accent-violet"><div class="num">S-07</div><h3>Government Scheme Matcher</h3><p>"You may be eligible for free ₹5 lakh treatment (Ayushman Bharat)" or state schemes like HIMCARE. Most eligible families don't know they qualify. Feel-good + shareable.</p><div class="chiprow"><span class="chip new">VIRAL</span></div></div>
+    <div class="card accent-violet"><div class="num">S-08</div><h3>Drug Interaction Warnings</h3><p>When the whole family's medicines live in one place: "Papa's new medicine clashes with his BP tablet." Must use an established drug database — never raw AI output.</p><div class="chiprow"><span class="chip med">SAFETY-CRITICAL</span></div></div>
+  </div>
+
+  <div class="callout"><b>Also recommended (build decision, not a feature):</b> a "Verified by a real doctor" upsell — AI explains the report free, and for ₹99 a registered doctor double-checks the summary. Converts free users and uses our medical team's network.</div>
+</section>
+
+<!-- ================= RISKS & SOLUTIONS ================= -->
+<section class="page" id="risks">
+  <div class="eyebrow">Read this before we build anything</div>
+  <h2>Risks &amp; solutions</h2>
+  <p class="lede">Each risk is shown like an abnormal lab value: the problem, its severity, and the prescribed fix.</p>
+
+  <div class="riskrow">
+    <div class="rr-head"><h3>R-01 · Pathy Recommender = legal &amp; ethical landmine</h3><span class="chip high">RISK: HIGH</span></div>
+    <p class="problem">In India, only Registered Medical Practitioners can give treatment advice (Telemedicine Practice Guidelines 2020, NMC rules). If our AI says "use homeopathy for this hormonal problem" and someone delays real treatment for PCOS or thyroid disease, the harm — and the liability — lands on us. <b>Important:</b> a "we are not responsible" disclaimer helps, but on its own it does NOT fully protect us if a court finds we gave medical advice that caused harm.</p>
+    <div class="fix"><span class="fixlabel">Prescribed fix — all three together</span>
+      <ul>
+        <li><b>Reframe as routing, not treatment:</b> "For this type of problem, people usually consult a [dermatologist / homeopath / ayurvedic doctor]" — we recommend a specialist type, never a treatment.</li>
+        <li><b>Disclaimer + forced acknowledgement:</b> your notification idea, made mandatory — user must tap "I understand this is not medical advice, I will consult a doctor" before seeing the suggestion.</li>
+        <li><b>Emergency red-flag blocker:</b> chest pain, blood in stool, infant fever, breathing trouble → no recommendation at all, only "see a doctor now" + nearby doctor list.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="riskrow">
+    <div class="rr-head"><h3>R-02 · "Teachers as doctors" — registration is mandatory</h3><span class="chip high">RISK: HIGH</span></div>
+    <p class="problem">Only registered practitioners can consult: NMC register for allopathy, CCH for homeopathy, CCIM for ayurveda. Students cannot consult. Cross-pathy prescribing (a homeopath prescribing allopathic medicine) is illegal per Supreme Court rulings.</p>
+    <div class="fix"><span class="fixlabel">Prescribed fix</span>
+      <ul>
+        <li>Verify every listed doctor's registration number against the official register before they go live — make the verified badge visible to users (it's also a trust feature).</li>
+        <li>Riya &amp; Aman's teachers are fine <b>if and only if</b> they hold current registration — collect registration numbers during onboarding.</li>
+        <li>Each doctor consults only within their own pathy on our platform.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="riskrow">
+    <div class="rr-head"><h3>R-03 · Health data law — DPDP Act 2023</h3><span class="chip high">RISK: HIGH</span></div>
+    <p class="problem">We will hold the most sensitive category of personal data. DPDP requires explicit consent, purpose limitation, breach notification, and consent per individual — the family feature means each adult member consents for themselves, not the subscriber for everyone.</p>
+    <div class="fix"><span class="fixlabel">Prescribed fix</span>
+      <ul>
+        <li>Consent screen per family member at first login (adults consent for themselves; parents for minors).</li>
+        <li>Store data in India (Supabase region / hosting choice matters), encrypt reports at rest.</li>
+        <li>Build a "download / delete my data" button from day one — retrofitting is painful.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="riskrow amber">
+    <div class="rr-head"><h3>R-04 · "Gemini is free" won't survive real users</h3><span class="chip med">RISK: MEDIUM</span></div>
+    <p class="problem">Free-tier rate limits will choke at even ~100 daily users doing OCR + explanations. If our architecture assumes one provider, a pricing change forces a rewrite.</p>
+    <div class="fix"><span class="fixlabel">Prescribed fix</span>
+      <ul>
+        <li>Build one internal AI interface (e.g., <span class="mono">explainReport()</span>, <span class="mono">parsePrescription()</span>) — Gemini today, swap to Claude/GPT behind it without touching the app.</li>
+        <li>Cache explanations: same test + similar values = reuse, don't re-call the API.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="riskrow amber">
+    <div class="rr-head"><h3>R-05 · Handwriting OCR errors on prescriptions</h3><span class="chip med">RISK: MEDIUM</span></div>
+    <p class="problem">A misread dose is dangerous — "0.5mg" read as "5mg" is a real failure mode, not a UX bug.</p>
+    <div class="fix"><span class="fixlabel">Prescribed fix</span>
+      <ul>
+        <li>Your confirm-before-save flow, made stronger: show extracted medicine names against a real drug database (match suggestions), and highlight low-confidence fields in red for the user to check.</li>
+        <li>Never auto-schedule reminders from unconfirmed scans.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="riskrow amber">
+    <div class="rr-head"><h3>R-06 · Doctor marketplace cold-start</h3><span class="chip med">RISK: MEDIUM</span></div>
+    <p class="problem">Marketplaces need both sides at once: no doctors → no patients → no doctors. Launching consultations on day one splits our tiny team's energy.</p>
+    <div class="fix"><span class="fixlabel">Prescribed fix</span>
+      <ul>
+        <li>Ship the tools (reader, locker, reminders) first — they work with zero doctors and build a user base.</li>
+        <li>Launch consultations only after we have users to send the first 15 doctors — then the ₹500–2000 sessions have real demand behind them.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABHA RESEARCH ================= -->
+<section class="page" id="abha">
+  <div class="eyebrow">Research answer · Government health stack</div>
+  <h2>ABHA / ABDM — yes, we can integrate, and the API is free</h2>
+  <p class="lede">India's Ayushman Bharat Digital Mission (ABDM) already gives every citizen a 14-digit health ID (ABHA) and a national health-record exchange. Instead of competing with it, MedRed builds on top of it as the friendly family layer.</p>
+
+  <table class="spec">
+    <tr><th>Is it chargeable?</th><td><b>No — the APIs are free.</b> ABDM is a government mission; there are no API fees. The real cost is developer time (full integrations typically take 3–6 months, but our v1 scope is much smaller — see below).</td></tr>
+    <tr><th>How to get access</th><td>Register on the <b>ABDM Sandbox</b> (<span class="mono">sandbox.abdm.gov.in</span>) → receive a client bridge ID + secret → build and test against sandbox APIs → pass certification → production access.</td></tr>
+    <tr><th>Milestones</th><td><b>M1</b> — ABHA number creation &amp; verification (login with health ID). <b>M2</b> — become a Health Information Provider (publish records users upload). <b>M3</b> — Health Information User (fetch a user's records from hospitals/labs, with consent).</td></tr>
+    <tr><th>What v1 needs</th><td>Only <b>M1 + Health Locker APIs</b>: let users create/link their ABHA and store records against it. M2/M3 come later when we integrate with labs (Phase-3 partnerships fit perfectly here).</td></tr>
+    <tr><th>Technical format</th><td>Health records exchange in <b>FHIR R4</b> (a standard JSON format). We'll need a small transformation layer; NHA provides SDKs, and third-party middleware exists if we want to skip the plumbing.</td></tr>
+    <tr><th>Consent model</th><td>ABDM has a built-in Consent Manager — patients approve/revoke every data share with OTP. This actually solves part of our DPDP work for us.</td></tr>
+  </table>
+
+  <div class="callout"><b>Why this is a marketing weapon, not just tech:</b> "MedRed is linked with the Government of India's ABHA health ID" is the trust line that convinces a skeptical parent. Frame it in the app as "Link your national health ID" — many users already have an ABHA from government hospitals and Ayushman Bharat.</div>
+
+  <div class="callout warn"><b>One caution:</b> certification takes time and FHIR is fiddly. Recommendation: build our own locker (Supabase storage) for launch, add ABHA linking in v1.5 — don't let government certification block the first release.</div>
+</section>
+
+<!-- ================= MARKETING ================= -->
+<section class="page" id="marketing">
+  <div class="eyebrow">Go-to-market · as discussed in the Meet</div>
+  <h2>Marketing — 3 phases</h2>
+  <p class="lede">Zero-budget plan using the team's own networks, then experts, then feet-on-the-ground partnerships.</p>
+
+  <div class="phase-block">
+    <div class="pnum">PHASE 1<br>LAUNCH</div>
+    <div>
+      <h3>Micro-influencers + Instagram channel</h3>
+      <p>Each of the 4 team members brings 2 friendly micro-influencers (5–10k followers) = 8 collaborations at zero cost. Ananya &amp; Riya run the Instagram channel with how-to-use videos.</p>
+      <ul>
+        <li><b>Suggestion:</b> the single best video format for us is "upload your report, watch grandma understand it" — emotion sells this app, not feature lists.</li>
+        <li>Give each influencer a personal referral code so we know which collaborations actually convert.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phase-block">
+    <div class="pnum">PHASE 2<br>SUPPLY</div>
+    <div>
+      <h3>List 15 verified experts</h3>
+      <p>Riya &amp; Aman recruit their medical-college teachers as the first listed doctors.</p>
+      <ul>
+        <li><b>Condition from Risks tab:</b> only teachers with current registration (NMC / CCH / CCIM) — collect registration numbers at onboarding and show the verified badge publicly.</li>
+        <li>Start consultations only once Phase-1 has produced real users (avoids the cold-start trap, R-06).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phase-block">
+    <div class="pnum">PHASE 3<br>GROUND</div>
+    <div>
+      <h3>Medical stores + pathology labs</h3>
+      <p>Field partnerships: we build their Google Maps presence and send them customers; they promote MedRed at the counter.</p>
+      <ul>
+        <li><b>Upgrade:</b> pathology partners plug directly into feature S-06 (lab test booking loop) — reminders in the app become bookings for the lab, and reports auto-land in the user's locker. That turns a favour-exchange into a commission revenue line.</li>
+        <li>Print a QR standee for each partner counter: "Scan → understand your report in Hindi, free."</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ROADMAP ================= -->
+<section class="page" id="roadmap">
+  <div class="eyebrow">Suggested build order</div>
+  <h2>Roadmap — ship small, ship useful</h2>
+  <p class="lede">V1 must work with zero doctors and zero partners — pure tools that one family can use on day one. Every later phase builds on the users V1 creates.</p>
+
+  <div class="lane">
+    <div class="lane-title"><span class="chip core">V1 · MVP</span><h3>The family report toolkit</h3></div>
+    <div class="grid">
+      <div class="mini"><b>Report Reader (F-01)</b><span>Hindi/English, voice output (S-03)</span></div>
+      <div class="mini"><b>Health Locker (F-03)</b><span>own storage first; ABHA link in v1.5</span></div>
+      <div class="mini"><b>Trend Graphs (S-01)</b><span>the locker's wow moment</span></div>
+      <div class="mini"><b>Follow-up Reminders (F-05)</b><span>brings users back monthly</span></div>
+      <div class="mini"><b>Family Plan (F-04)</b><span>₹99/mo, per-member consent (R-03)</span></div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-title"><span class="chip phase">V1.5</span><h3>Daily-use hooks</h3></div>
+    <div class="grid">
+      <div class="mini"><b>Prescription Scanner (F-02)</b><span>with drug-database confirm flow (R-05)</span></div>
+      <div class="mini"><b>Generic Price Saver (S-02)</b><span>Jan Aushadhi savings</span></div>
+      <div class="mini"><b>Emergency QR Card (S-04)</b><span>quick win on locker data</span></div>
+      <div class="mini"><b>ABHA linking</b><span>M1 + Health Locker APIs, free</span></div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-title"><span class="chip rev">V2</span><h3>Marketplace &amp; revenue</h3></div>
+    <div class="grid">
+      <div class="mini"><b>Doctor Directory + Consults (F-07)</b><span>15 verified experts, registration checked (R-02)</span></div>
+      <div class="mini"><b>Specialist Router (F-06)</b><span>with all three R-01 guardrails</span></div>
+      <div class="mini"><b>Lab Booking Loop (S-06)</b><span>with Phase-3 pathology partners</span></div>
+      <div class="mini"><b>Vaccination Tracker (S-05)</b><span>retention for young parents</span></div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-title"><span class="chip low">V3</span><h3>Engagement layer</h3></div>
+    <div class="grid">
+      <div class="mini"><b>Medical News Feed (F-09)</b><span>myth-busters, schemes, hooks</span></div>
+      <div class="mini"><b>Home Remedies (F-08)</b><span>with emergency red-flag blocker</span></div>
+      <div class="mini"><b>Scheme Matcher (S-07)</b><span>Ayushman Bharat, HIMCARE</span></div>
+      <div class="mini"><b>Drug Interactions (S-08)</b><span>established database only</span></div>
+    </div>
+  </div>
+
+  <div class="callout"><b>Why this order:</b> V1 needs no doctors, no partners, no certification — just us. It creates the users that make V2's marketplace and Phase-3 partnerships actually worth joining.</div>
+</section>
+
+</main>
+
+<footer>MEDRED · INTERNAL TEAM BRIEFING · NOT MEDICAL ADVICE · JUL 2026</footer>
+
+<script>
+  const tabs=document.querySelectorAll('#tabs button');
+  const pages=document.querySelectorAll('section.page');
+  tabs.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      tabs.forEach(b=>b.classList.remove('active'));
+      pages.forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.page).classList.add('active');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+</script>
+</body>
+</html>
